@@ -1,0 +1,35 @@
+# General Options
+--seed=92
+
+# File options
+--exp_dir=experiments
+--exp_name=noise1e-4_us0.067_circularuniformcalib_lr0.001_lre0.01_u8
+--data_dir=data/mridata_knees/tfrecord
+--data_source=knees_full
+
+# Training options
+--num_epochs=300
+--batch_size=1
+--optimizer=adam
+--lr=0.001
+--lr_enc=0.01
+--loss=mae
+--eval_every=1
+--save_ckpt_every=1
+
+# Model options
+--undersamp_ratio=0.0666667
+--noise_std=0.0001
+--enc_arch=tfnufft
+--tfnufft_oversamp=1.25
+--tfnufft_width=4.0
+--coords_initializer=mask_coordinates
+--fixed_mask_coordinates_path=masks/mridata_knees/masks_circularuniform/mask_circularuniform_r15_c20_i0.npy
+--optimize_sampling
+--dec_arch=unrolled
+--unrolled_steps=8
+--unrolled_num_resblocks=3
+--unrolled_num_filters=128
+--unrolled_kernel_size=3
+--unrolled_normalization_layer=instance
+--nounrolled_share_proxresblocks

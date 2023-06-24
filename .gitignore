@@ -1,0 +1,12 @@
+data/
+results/
+experiments/
+*.err
+*.log
+*.out
+*.job
+*__pycache__
+.ipynb_checkpoints
+.vscode
+*.cfl
+*.hdr

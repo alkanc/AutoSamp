@@ -1,0 +1,17 @@
+mridata
+tensorflow==2.8
+tensorflow-addons==0.16.1
+numpy
+scipy
+ismrmrd
+matplotlib
+seaborn
+imageio
+imageio-ffmpeg
+scikit-image
+sigpy==0.1.23
+jupyterlab
+scikit-learn
+tensorflow-gan
+cupy-cuda112
+protobuf==3.20.*
