@@ -1,5 +1,5 @@
 # AutoSamp
- AutoSamp: Autoencoding MRI Sampling via Variational Information Maximization 
+ AutoSamp: Autoencoding MRI Sampling via Variational Information Maximization (https://arxiv.org/abs/2306.02888) 
 
 
 This repository contains TensorFlow2 implementation of AutoSamp for joint optimization of sampling pattern and reconstruction for MRI. The repository can also used for general DL based Non-Cartesian reconstruction for specified trajectories (more information available at [Training](#Training)).
