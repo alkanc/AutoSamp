@@ -99,11 +99,10 @@ Flags are described below:
 # About
 If you use AutoSamp for your work, please consider citing the following work:
 
-    @misc{alkan2023autosamp,
-          title={AutoSamp: Autoencoding MRI Sampling via Variational Information Maximization}, 
-          author={Cagan Alkan and Morteza Mardani and Shreyas S. Vasanawala and John M. Pauly},
-          year={2023},
-          eprint={2306.02888},
-          archivePrefix={arXiv},
-          primaryClass={eess.IV}
+    @article{alkan2024autosamp, 
+             title={AutoSamp: Autoencoding k-space Sampling via Variational Information Maximization for 3D MRI},
+             author={Alkan, Cagan and Mardani, Morteza and Liao, Congyu and Li, Zhitao and Vasanawala, Shreyas S and Pauly, John M},
+             journal={IEEE Transactions on Medical Imaging},
+             year={2024},
+             publisher={IEEE}
     }
