@@ -108,7 +108,7 @@ def setup_data_tfrecords(dir_input,
                     kspace_x = kspace[:, :, :, i_x]
                     # sensemap_x = sensemap[:, :, :, :, i_x]
                     try:
-                        sensemap_x = mri.estimate_sense_maps(kspace_x[:,None,:,:], calib=test_calib, autothresh=True)
+                        sensemap_x = mri.estimate_sense_maps(kspace_x[:,None,:,:], calib=test_calib, autothresh=False)
                         sensemap_x = np.expand_dims(np.squeeze(sensemap_x), axis=0)
                     except Exception as e:
                         logger.error('  Error in sensitivity calculation for %s' % file_out)
@@ -172,8 +172,6 @@ def setup_data_tfrecords(dir_input,
     return max_shape_z, max_shape_y
 
 
-
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Data preparation')
     # parser.add_argument(
@@ -212,9 +210,9 @@ if __name__ == '__main__':
     # ismrmrd_to_npy(dir_mridata_org, dir_npy)
 
     if args.num_compressed_coils is None:
-        dir_tfrecord = os.path.join(args.output, 'tfrecord_croppedmap')
+        dir_tfrecord = os.path.join(args.output, 'tfrecord_cc')
     else:
-        dir_tfrecord = os.path.join(args.output, 'tfrecord_croppedmap_cc%d' % args.num_compressed_coils)
+        dir_tfrecord = os.path.join(args.output, 'tfrecord_cc%d' % args.num_compressed_coils)
     shape_z, shape_y = setup_data_tfrecords(
         args.dir_npy, dir_tfrecord, num_compressed_coils=args.num_compressed_coils)
 

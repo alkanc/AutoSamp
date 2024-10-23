@@ -43,9 +43,8 @@ def read_knees(data_dir, split, data_shape=None, num_compressed_coils=None, emul
     dataset = tf.data.TFRecordDataset(filenames=tfrecords_files)
     
     def _parse_and_process_knees(serialized_example):
-        features = tf.io.parse_single_example(
-            serialized_example,
-            features={
+
+        features_dict = {
                 #'name': tf.FixedLenFeature([], tf.string),
                 #'xslice': tf.FixedLenFeature([], tf.int64),
                 #'ks_shape_x': tf.FixedLenFeature([], tf.int64),
@@ -59,7 +58,16 @@ def read_knees(data_dir, split, data_shape=None, num_compressed_coils=None, emul
                 #'map_shape_m': tf.FixedLenFeature([], tf.int64),
                 'ks': tf.io.FixedLenFeature([], tf.string),
                 'map': tf.io.FixedLenFeature([], tf.string)
-                })
+                }
+        if num_compressed_coils is not None:
+            features_dict['map_cc_shape_c'] = tf.io.FixedLenFeature([], tf.int64)
+            features_dict['map_cc'] = tf.io.FixedLenFeature([], tf.string)
+            features_dict['ks_cc_shape_c'] = tf.io.FixedLenFeature([], tf.int64)
+            features_dict['ks_cc'] = tf.io.FixedLenFeature([], tf.string)
+
+        features = tf.io.parse_single_example(
+            serialized_example,
+            features=features_dict)
         
         # process k-space data
         ks_shape_y = tf.cast(features['ks_shape_y'], dtype=tf.int32)
@@ -87,24 +95,20 @@ def read_knees(data_dir, split, data_shape=None, num_compressed_coils=None, emul
             map_x = tf.ones([1, map_shape_z, map_shape_y], dtype=map_x.dtype)
         else:
             if num_compressed_coils is not None:
-                mm = tf.reshape(map_x, [map_shape_c, map_shape_z * map_shape_y])
-                # kk = tf.reshape(ks_x, [ks_shape_c, ks_shape_z * ks_shape_y])
-                s, u, v = tf.linalg.svd(mm)
-                map_x = tf.linalg.matmul(u[:, :num_compressed_coils], mm, adjoint_a=True)
-                # ks_x = tf.linalg.matmul(u[:, :num_compressed_coils], kk, adjoint_a=True)
-                # cc = np.matmul(mm, mm.conj().T)
-                # w, v = np.linalg.eig(cc)
-                # ceig = np.dot(v.conj().T, mm)
-                # ceig = np.reshape(ceig, map_shape)
+                map_cc_shape_c = tf.cast(features['map_cc_shape_c'], dtype=tf.int32)
+                ks_cc_shape_c = tf.cast(features['ks_cc_shape_c'], dtype=tf.int32)
+#                assert num_compressed_coils == map_cc_shape_c == ks_cc_shape_c
+                map_cc_shape = [map_cc_shape_c, map_shape_z, map_shape_y]
+                ks_cc_shape = [ks_cc_shape_c, ks_shape_z, ks_shape_y]
+                map_cc = tf.io.decode_raw(features['map_cc'], tf.float32)
+                ks_cc = tf.io.decode_raw(features['ks_cc'], tf.float32)
+                map_cc = tf.reshape(map_cc, map_cc_shape + [2]) # 2 is due to complex values
+                ks_cc = tf.reshape(ks_cc, ks_cc_shape + [2]) # 2 is due to complex values
+                map_cc = mrutils.channels_to_complex(map_cc, -1)
+                ks_cc = mrutils.channels_to_complex(ks_cc, -1)
 
-                map_shape_c = tf.cast(num_compressed_coils, dtype=tf.int32)
-                # ks_shape_c = tf.cast(num_compressed_coils, dtype=tf.int32)
-                # image_shape = [ks_shape_c, ks_shape_z, ks_shape_y]
-                map_shape = [map_shape_c, map_shape_z, map_shape_y]
-                map_x = tf.reshape(map_x, map_shape)
-                # ks_x = tf.reshape(ks_x, image_shape)
-                # coil sensitivity normalization
-                map_x = tf.math.divide_no_nan(map_x, tf.reduce_sum(tf.math.conj(map_x) * map_x, axis=0, keepdims=True))
+                map_x = map_cc
+                ks_x = ks_cc
 
         # resize if needed
         if data_shape is not None:
